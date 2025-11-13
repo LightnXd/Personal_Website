@@ -8,7 +8,7 @@ class ProjectCard extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['folder', 'count', 'title', 'description', 'github-frontend', 'github-backend', 'technologies'];
+    return ['folder', 'count', 'title', 'description', 'github-frontend', 'github-backend', 'github-scraper'];
   }
 
   attributeChangedCallback() {
@@ -24,32 +24,22 @@ class ProjectCard extends HTMLElement {
     const description = this.getAttribute('description') || 'Project description';
     const githubFrontend = this.getAttribute('github-frontend') || '';
     const githubBackend = this.getAttribute('github-backend') || '';
-    const technologies = this.getAttribute('technologies') || '';
+    const githubScraper = this.getAttribute('github-scraper') || '';
 
     // Build GitHub links
     let githubLinks = '';
-    if (githubFrontend && githubBackend) {
+    const parts = [];
+    if (githubFrontend) parts.push(`<a href="${githubFrontend}" target="_blank">Frontend</a>`);
+    if (githubBackend) parts.push(`<a href="${githubBackend}" target="_blank">Backend</a>`);
+    if (githubScraper) parts.push(`<a href="${githubScraper}" target="_blank">Scraper</a>`);
+
+    if (parts.length) {
       githubLinks = `
-        <p>Explore the project on GitHub: 
-          <a href="${githubFrontend}" target="_blank"><strong>Frontend</strong></a> | 
-          <a href="${githubBackend}" target="_blank"><strong>Backend</strong></a>
-        </p>
-      `;
-    } else if (githubFrontend) {
-      githubLinks = `
-        <p>Check it out on <a href="${githubFrontend}" target="_blank"><strong>GitHub</strong></a>.</p>
+        <p>Explore the project on GitHub: ${parts.join(' | ')}</p>
       `;
     }
 
-    // Build technologies section
-    let techSection = '';
-    if (technologies) {
-      const techList = technologies.split(',').map(tech => `<li>${tech.trim()}</li>`).join('');
-      techSection = `
-        <p>Technologies used:</p>
-        <ul>${techList}</ul>
-      `;
-    }
+    // Note: `technologies` attribute removed — no tech section rendered
 
     this.innerHTML = `
       <div class="content4">
@@ -66,7 +56,7 @@ class ProjectCard extends HTMLElement {
         <div class="text-content">
           <h3>${title}</h3>
           ${description}
-          ${techSection}
+          
           ${githubLinks}
         </div>
       </div>
